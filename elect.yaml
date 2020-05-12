@@ -1,0 +1,4 @@
+elect:
+  max_lease_timeout: 4000
+  acquire_lease_timeout: 2000
+  address: [127.0.0.1:10000, 127.0.0.1:10001, 127.0.0.1:10002]
