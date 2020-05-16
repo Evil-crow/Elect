@@ -42,16 +42,12 @@ void ReadSession::Start() {
 
 void ReadSession::DoRead() {
   auto self = shared_from_this();
-  asio::async_read(*socket_, input_stream_, [this, self](asio::error_code ec, size_t transfered) {
-    if (!ec || (transfered != 0 && ec == asio::error::eof)) {
+  auto buf = input_stream_.prepare(4096);
+  socket_->async_read_some(buf, [this, self](asio::error_code ec, size_t transfer) {
+    if (!ec || (transfer != 0 && ec == asio::error::eof)) {
+      input_stream_.commit(transfer);
       OnReadHandle();
     } else {
-      LOG(INFO) << "ReadSession peer connection closed ["
-                << socket_->remote_endpoint().address().to_string()
-                << ":"
-                << socket_->remote_endpoint().port()
-                << "]";
-
       if (socket_->is_open()) {
         socket_->close();
         network_->RemoveReadSession(node_id);

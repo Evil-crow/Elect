@@ -33,10 +33,11 @@ WriteSession::~WriteSession() {
 
 void WriteSession::SendMessage(const Message &msg) {
   auto self = shared_from_this();
-  std::ostream output(&output_stream_);
+  auto output_stream = std::make_shared<asio::streambuf>();
+  std::ostream output(output_stream.get());
 
   if (google::protobuf::util::SerializeDelimitedToOstream(msg.Msg(), &output)) {
-    asio::async_write(*socket_, output_stream_, [this, self](asio::error_code ec, size_t) {
+    asio::async_write(*socket_, *output_stream, [this, self, output_stream](asio::error_code ec, size_t transfer) {
       if (!ec) {
         LOG(INFO) << "All message send Ok!";
       } else {

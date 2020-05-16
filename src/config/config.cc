@@ -53,7 +53,7 @@ namespace elect {
   }
 
   Data Config::GetData() {
-    auto config = YAML::LoadFile("/home/Crow/CLionProjects/Elect/elect.yaml");
+    auto config = YAML::LoadFile("./elect.yaml");
     assert(config["elect"]);
     auto load_data = config["elect"].as<elect::YamlElect>();
 
