@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+/*
+ * This file is used to describe Paxos Message by ptotobuf
+ * The main message is defined as follow parts:
+ * 1. Mgs type
+ * 2. IDs, (proposalID, acceptedID etc.)
+ * 3. expire time
+ * 4. Owner
+ * 5. duration
+ * 6. version (MVCC)
+ */
+
+package elect;
+message PaxosMsg {
+  enum Type {
+    NONE = 0;
+    PREPARE_REQUEST = 1;
+    PREPARE_REJECT = 2;
+    PREPARE_ACCEPTED = 3;
+    PREPARE_OPENING = 4;
+    PROPOSE_REQUEST = 5;
+    PROPOSE_ACCEPTED = 6;
+    PROPOSE_REJECT = 7;
+    LEAEN_CHOSEN = 8;
+    ONLINE_TO_CONNECT = 9;
+  }
+  Type type = 1;
+  string node_id = 2;
+  uint64 proposal_id = 3;
+  uint64 accepted_proposal_id = 4;
+  string lease_owner = 5;
+  uint64 duration = 6;
+  uint64 expire_time = 7;
+  uint64 version = 8;
+}
