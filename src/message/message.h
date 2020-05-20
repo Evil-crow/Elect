@@ -17,7 +17,7 @@ class Message {
 
   // prepare msg for transport
   bool PrepareRequest(const std::string &nodeID, uint64_t proposalID, uint64_t version);
-  bool PrepareRejected(const std::string& nodeID, uint64_t proposalID);
+  bool PrepareRejected(const std::string& nodeID, uint64_t proposalID, uint64_t version);
   bool PrepareAccepted(const std::string& nodeID, uint64_t proposalID, uint64_t accepted_propposalID, const std::string& lease_owner, uint64_t duration);
   bool PrepareOpening(const std::string& nodeID, uint64_t proposalID);
 
@@ -25,18 +25,19 @@ class Message {
   bool ProposeRejected(const std::string& nodeID, uint64_t proposalID);
   bool ProposeAccepted(const std::string& nodeID, uint64_t proposalID);
 
-  bool LearnChosen(const std::string& nodeID, const std::string& lease_owner, uint64_t duration, uint64_t expiretime);
+  bool LearnChosen(const std::string& nodeID, const std::string& lease_owner, uint64_t duration, uint64_t expiretime, uint64_t version);
   bool ConnectOnlineNode(const std::string &nodeID);
 
   void Clear();
   void Assign(const PaxosMsg &msg);
 
   // get info from msg
-  bool IsRequest();
-  bool IsResponse();
-  bool IsPrepareResponse();
-  bool IsProposeResponse();
-  bool IsConnectOnline();
+  bool IsRequest() const;
+  bool IsResponse() const;
+  bool IsPrepareResponse() const;
+  bool IsProposeResponse() const;
+  bool IsConnectOnline() const;
+  bool IsLearnChosen() const;
 
   inline PaxosMsg::Type MsgType() const { return msg_.type(); }
   inline std::string NodeID() const { return msg_.node_id(); }

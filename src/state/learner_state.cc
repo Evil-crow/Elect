@@ -5,6 +5,7 @@ namespace elect {
 
 LearnerState::LearnerState() noexcept
   : learned_(false),
+    changed_(false),
     expire_time_(0),
     lease_epoch_(0){}
 
@@ -31,6 +32,10 @@ void LearnerState::SetLeaseEpoch(uint64_t epoch) {
   lease_epoch_ = epoch;
 }
 
+void LearnerState::SetChanged(bool flag) {
+  changed_ = flag;
+}
+
 bool LearnerState::Learned() const {
   return learned_;
 }
@@ -41,6 +46,10 @@ const std::string & LearnerState::LeaseOwner() const {
 
 uint64_t LearnerState::LeaseEpoch() const {
   return lease_epoch_;
+}
+
+bool LearnerState::Changed() const {
+  return changed_;
 }
 
 uint64_t LearnerState::ExpireTime() const {

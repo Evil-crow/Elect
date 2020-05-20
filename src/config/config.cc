@@ -10,6 +10,7 @@
 namespace elect {
 
   struct YamlElect {
+    int node_no_;
     std::string node_id_;
     int max_lease_timeout_;
     int acquire_lease_timeout_;
@@ -23,6 +24,7 @@ namespace YAML {
   struct convert<elect::YamlElect> {
     static Node encode(const elect::YamlElect &rhs) {
       YAML::Node node;
+      node["No"] = rhs.node_no_;
       node["node"] = rhs.node_id_;
       node["max_lease_timeout_"] = rhs.max_lease_timeout_;
       node["acquire_lease_timeout"] = rhs.acquire_lease_timeout_;
@@ -32,8 +34,9 @@ namespace YAML {
     }
 
     static bool decode(const Node &node, elect::YamlElect &rhs) {
-      if (!node.IsMap() || node.size() != 4)
+      if (!node.IsMap() || node.size() != 5)
         return false;
+      rhs.node_no_ = node["No"].as<int>();
       rhs.node_id_ = node["node"].as<std::string>();
       rhs.max_lease_timeout_ = node["max_lease_timeout"].as<int>();
       rhs.acquire_lease_timeout_ = node["acquire_lease_timeout"].as<int>();
@@ -58,6 +61,7 @@ namespace elect {
     auto load_data = config["elect"].as<elect::YamlElect>();
 
     Data data{};
+    data.node_no_ = load_data.node_no_;
     data.max_lease_timeout_ = load_data.max_lease_timeout_;
     data.acquire_lease_timeout = load_data.acquire_lease_timeout_;
     data.node_id_ = load_data.node_id_;

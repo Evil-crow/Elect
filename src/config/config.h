@@ -11,6 +11,7 @@ namespace elect {
 using address = std::pair<std::string, long>;
 
 struct Data {
+  int node_no_;
   int max_lease_timeout_;
   int acquire_lease_timeout;
   std::string node_id_;
@@ -27,6 +28,7 @@ class Config {
   Config &operator=(const Config &) = delete;
 
   // get configuration infos
+  inline int NodeNo() const { return data_.node_no_; }
   inline int MaxLeaseTime() const { return data_.max_lease_timeout_; }
   inline int AcquireLeaseTimeout() const { return data_.acquire_lease_timeout; }
   inline auto NodeAddress() const -> std::vector<elect::address> {

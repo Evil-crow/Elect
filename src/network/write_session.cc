@@ -11,6 +11,19 @@
 
 namespace elect {
 
+std::map<PaxosMsg::Type, std::string> map = {
+  {PaxosMsg::Type::PaxosMsg_Type_NONE, "noop"},
+  {PaxosMsg::Type::PaxosMsg_Type_PREPARE_REQUEST, "Proposer: prepare request"},
+  {PaxosMsg::Type::PaxosMsg_Type_PREPARE_REJECT, "Acceptor: prepare reject"},
+  {PaxosMsg::Type::PaxosMsg_Type_PREPARE_ACCEPTED, "Acceptor: prepare accepted"},
+  {PaxosMsg::Type::PaxosMsg_Type_PREPARE_OPENING, "Acceptor: prepare opening"},
+  {PaxosMsg::Type::PaxosMsg_Type_PROPOSE_REQUEST, "Proposer: propose request"},
+  {PaxosMsg::Type::PaxosMsg_Type_PROPOSE_REJECT, "Acceptor: propose reject"},
+  {PaxosMsg::Type::PaxosMsg_Type_PROPOSE_ACCEPTED, "Acceptor: propose accept"},
+  {PaxosMsg::Type::PaxosMsg_Type_LEAEN_CHOSEN, "Learner: learn chosen"},
+  {PaxosMsg::Type::PaxosMsg_Type_ONLINE_TO_CONNECT, "online to connect"},
+};
+
 WriteSession::WriteSession(
   std::shared_ptr<asio::io_context> ctx,
   asio::ip::tcp::socket socket,
@@ -36,16 +49,22 @@ void WriteSession::SendMessage(const Message &msg) {
   auto output_stream = std::make_shared<asio::streambuf>();
   std::ostream output(output_stream.get());
 
+  auto nodeid = msg.ProposalID();
+  auto real_id = nodeid >> 8;
+  auto real_no = nodeid & 255;
+  LOG(INFO) << "Type: " << map[msg.MsgType()] << std::endl
+            << "To: " << socket_->remote_endpoint().address().to_string() << ":" << socket_->remote_endpoint().port() << std::endl
+            << "NodeID: " << msg.NodeID() << std::endl
+            << "ProposalID: " << msg.ProposalID() << "[" << real_id << ":" << real_no << "]" << std::endl
+            << "LeaseOwner: " << msg.LeaseOwner() << std::endl
+            << "ExpireTime: " << msg.ExpireTime() << std::endl
+            << "Duration: " << msg.Duration() << std::endl;
+
   if (google::protobuf::util::SerializeDelimitedToOstream(msg.Msg(), &output)) {
     asio::async_write(*socket_, *output_stream, [this, self, output_stream](asio::error_code ec, size_t transfer) {
       if (!ec) {
-        LOG(INFO) << "All message send Ok!";
+        std::cout << "[SYS]All message send Ok!";
       } else {
-        LOG(INFO) << "ReadSession peer connection closed ["
-                  << socket_->remote_endpoint().address().to_string()
-                  << ":"
-                  << socket_->remote_endpoint().port()
-                  << "]";
         if (socket_->is_open()) {
           socket_->close();
           network_->RemoveWriteSession(node_id);

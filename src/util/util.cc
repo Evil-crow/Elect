@@ -4,9 +4,9 @@
 #include <sys/time.h>
 
 namespace elect {
+namespace util {
 
-uint64_t GetMilliTimestamp()
-{
+uint64_t GetMilliTimestamp() {
   uint64_t now;
   struct timeval tv{0, 0};
 
@@ -19,8 +19,7 @@ uint64_t GetMilliTimestamp()
   return now;
 }
 
-uint64_t GetMicroTimestamp()
-{
+uint64_t GetMicroTimestamp() {
   uint64_t now;
   struct timeval tv{0, 0};
 
@@ -33,4 +32,15 @@ uint64_t GetMicroTimestamp()
   return now;
 }
 
+uint64_t NewProposalID(uint64_t proposalID, uint64_t nodeNo) {
+  // <proposal count since restart> <nodeNo>
+  proposalID = proposalID >> 8;
+  proposalID++;
+  proposalID = proposalID << 8;
+
+  uint64_t nextProposalID = proposalID | nodeNo;
+  return nextProposalID;
+}
+
+}
 }

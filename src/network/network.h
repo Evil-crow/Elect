@@ -32,7 +32,7 @@ class Network {
   void Start();
   void Stop();
   void NewConnetion(const std::string &node_id);
-  void SetReadHandler(ReadHandler &&handler);
+  void SetReadHandler(ReadHandler handler);
   void BroadcastMessage(const Message &msg);
   void SendMessage(const std::string& node_id, const Message &msg);
 

@@ -7,6 +7,8 @@
 
 #include <glog/logging.h>
 
+#include <utility>
+
 namespace elect {
 
 Network::Network() noexcept :
@@ -25,7 +27,7 @@ Network::Network() noexcept :
   acceptor_->listen();
   DoAccept();
 
-  // connect to the other nodes, for initlization, can use sync IO ops
+  // connect to the other nodes, for initlization
   auto nodes = config.NodeAddress();
   for (const auto &var : nodes) {
     asio::ip::tcp::endpoint ep_var(asio::ip::make_address(var.first), var.second);
@@ -35,6 +37,12 @@ Network::Network() noexcept :
         auto ptr = std::make_shared<WriteSession>(ctx_, std::move(*sock_var), this);
         auto node_id = std::string(var.first + ":" + std::to_string(var.second));
         write_sessions_.emplace(node_id, ptr);
+
+        // to notify other node -> this node is online, can connect it
+        Message msg;
+        const auto &config = Config::GetInstance();
+        msg.ConnectOnlineNode(config.NodeID());
+        SendMessage(node_id, msg);
       } else {
         LOG(INFO) << "Can't connect now ["
                   << var.first
@@ -65,7 +73,7 @@ void Network::NewConnetion(const std::string &node_id) {
     return;
 
   auto pos = node_id.find(':');
-  auto ip = node_id.substr(pos);
+  auto ip = node_id.substr(0, pos);
   auto port = ::strtol(node_id.c_str() + pos + 1, nullptr, 10);
 
   asio::ip::tcp::endpoint ep(asio::ip::make_address(ip), port);
@@ -82,8 +90,8 @@ void Network::NewConnetion(const std::string &node_id) {
   });
 }
 
-void Network::SetReadHandler(ReadHandler &&handler) {
-  handler_ = handler;
+void Network::SetReadHandler(ReadHandler handler) {
+  handler_ = std::move(handler);
 }
 
 void Network::DoAccept() {

@@ -19,9 +19,10 @@ bool Message::PrepareRequest(const std::string &nodeID, uint64_t proposalID, uin
   return true;
 }
 
-bool Message::PrepareRejected(const std::string &nodeID, uint64_t proposalID) {
+bool Message::PrepareRejected(const std::string &nodeID, uint64_t proposalID, uint64_t version) {
   Init(PaxosMsg::Type::PaxosMsg_Type_PREPARE_REJECT, nodeID);
   msg_.set_proposal_id(proposalID);
+  msg_.set_version(version);
 
   return true;
 }
@@ -79,11 +80,13 @@ bool Message::LearnChosen(
   const std::string& nodeID,
   const std::string& lease_owner,
   uint64_t duration,
-  uint64_t expiretime) {
+  uint64_t expiretime,
+  uint64_t version) {
   Init(PaxosMsg::Type::PaxosMsg_Type_LEAEN_CHOSEN, nodeID);
   msg_.set_lease_owner(lease_owner);
   msg_.set_duration(duration);
   msg_.set_expire_time(expiretime);
+  msg_.set_version(version);
 
   return true;
 }
@@ -102,28 +105,32 @@ bool Message::ConnectOnlineNode(const std::string &nodeID) {
   return true;
 }
 
-bool Message::IsRequest() {
+bool Message::IsRequest() const {
   return (msg_.type() == PaxosMsg::Type::PaxosMsg_Type_PREPARE_REQUEST ||
   msg_.type() == PaxosMsg::Type::PaxosMsg_Type_PROPOSE_REQUEST);
 }
 
-bool Message::IsResponse() {
+bool Message::IsResponse() const {
   return IsPrepareResponse() || IsProposeResponse();
 }
 
-bool Message::IsPrepareResponse() {
+bool Message::IsPrepareResponse() const {
   return (msg_.type() == PaxosMsg::Type::PaxosMsg_Type_PREPARE_OPENING ||
   msg_.type() == PaxosMsg::Type::PaxosMsg_Type_PREPARE_ACCEPTED ||
   msg_.type() == PaxosMsg::Type::PaxosMsg_Type_PREPARE_REJECT);
 }
 
-bool Message::IsProposeResponse() {
+bool Message::IsProposeResponse() const {
   return (msg_.type() == PaxosMsg::Type::PaxosMsg_Type_PROPOSE_ACCEPTED ||
   msg_.type() == PaxosMsg::Type::PaxosMsg_Type_PROPOSE_REJECT);
 }
 
-bool Message::IsConnectOnline() {
+bool Message::IsConnectOnline() const {
   return msg_.type() == PaxosMsg::Type::PaxosMsg_Type_ONLINE_TO_CONNECT;
+}
+
+bool Message::IsLearnChosen() const {
+  return msg_.type() == PaxosMsg::Type::PaxosMsg_Type_LEAEN_CHOSEN;
 }
 
 }
