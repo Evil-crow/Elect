@@ -6,7 +6,6 @@
 #include "read_session.h"
 
 #include <glog/logging.h>
-
 #include <utility>
 
 namespace elect {
@@ -45,10 +44,7 @@ Network::Network() noexcept :
         SendMessage(node_id, msg);
       } else {
         LOG(INFO) << "Can't connect now ["
-                  << var.first
-                  << ":"
-                  << var.second
-                  << "]";
+                  << var.first << ":" << var.second << "]";
       }
     });
   }
@@ -83,9 +79,7 @@ void Network::NewConnetion(const std::string &node_id) {
       auto ptr = std::make_shared<WriteSession>(ctx_, std::move(*socket), this);
       write_sessions_.emplace(node_id, ptr);
     } else {
-      LOG(INFO) << "Can't connect now ["
-                << node_id
-                << "]";
+      LOG(INFO) << "Can't connect now [" << node_id << "]";
     }
   });
 }
@@ -107,9 +101,7 @@ void Network::DoAccept() {
       ptr->SetMessageHandler(handler_);
       ptr->Start();
     } else {
-      LOG(INFO) << "Accept error ["
-                << ec.message()
-                << "]";
+      LOG(INFO) << "Accept error [" << ec.message() << "]";
     }
     DoAccept();
   });

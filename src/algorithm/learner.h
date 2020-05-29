@@ -28,6 +28,7 @@ class Learner {
   uint64_t GetLeaseEpoch();
   void SetOnLearnLease(Handler handler);
   void SetOnLeaseTimout(Handler handler);
+  void SetChangedFlag(bool flag);
 
  private:
   void OnLearnChosen();
@@ -37,6 +38,7 @@ class Learner {
   std::shared_ptr<asio::steady_timer> lease_timeout_timer_;
   Message msg_;
   LearnerState state_;
+  std::string owner_;
   Handler learn_lease_handler_;
   Handler lease_timeout_handler_;
 };

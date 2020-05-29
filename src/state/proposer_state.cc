@@ -40,8 +40,8 @@ void ProposerState::SetDuration(uint64_t duration) {
   duration_ = duration;
 }
 
-void ProposerState::SetExpireTime(uint64_t expiretime) {
-  expire_time_ = expiretime;
+void ProposerState::SetExpireTime(uint64_t expire_time) {
+  expire_time_ = expire_time;
 }
 
 void ProposerState::SetVersion(uint64_t version) {

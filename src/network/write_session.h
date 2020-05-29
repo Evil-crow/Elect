@@ -21,7 +21,6 @@ class WriteSession : public std::enable_shared_from_this<WriteSession> {
   Network *network_;
   std::shared_ptr<asio::io_context> ctx_;
   std::unique_ptr<asio::ip::tcp::socket> socket_;
-  asio::streambuf output_stream_;
   std::string node_id;
 };
 

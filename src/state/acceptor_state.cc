@@ -67,7 +67,7 @@ uint64_t AcceptorState::AcceptedExpireTime() const {
   return accepted_expire_time_;
 }
 
-uint64_t AcceptorState::Accepted_Version() const {
+uint64_t AcceptorState::AcceptedVersion() const {
   return accepted_version_;
 }
 

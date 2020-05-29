@@ -18,7 +18,7 @@ class ProposerState {
   void SetHighestReceivedProposalID(uint64_t proposalID);
   void SetLeaseOwner(const std::string &owner);
   void SetDuration(uint64_t duration);
-  void SetExpireTime(uint64_t expiretime);
+  void SetExpireTime(uint64_t expire_time);
   void SetVersion(uint64_t version);
 
   bool Preparing() const;

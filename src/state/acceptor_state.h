@@ -25,7 +25,7 @@ class AcceptorState {
   uint64_t AcceptedProposalID() const;
   uint64_t AcceptedDuration() const;
   uint64_t AcceptedExpireTime() const;
-  uint64_t Accepted_Version() const;
+  uint64_t AcceptedVersion() const;
   const std::string &AcceptedLeaseOwner() const;
 
  private:

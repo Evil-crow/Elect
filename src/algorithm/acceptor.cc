@@ -3,7 +3,6 @@
 
 #include <utility>
 
-#include <glog/logging.h>
 #include "network/network.h"
 #include "config/config.h"
 #include "util/util.h"
@@ -36,7 +35,8 @@ void Acceptor::OnLeaseTimeout() {
 
 void Acceptor::OnPrepareRequest() {
   if (state_.Accepted() && state_.AcceptedExpireTime() < util::GetMilliTimestamp()) {
-    lease_timeout_timer_->cancel();
+    asio::error_code ec;
+    lease_timeout_timer_->cancel(ec);
     OnLeaseTimeout();
   }
 
@@ -44,19 +44,20 @@ void Acceptor::OnPrepareRequest() {
   const auto &config = Config::GetInstance();
   auto nodeID = config.NodeID();
   auto senderID = msg_.NodeID();
-  if (/*(msg_.Version() < state_.Accepted_Version()) ||*/ (msg_.ProposalID() < state_.PromisedProposalID())) {
-    LOG(INFO) << "Acceptor:  msg proposalID => " << msg_.ProposalID() << " Promised proposalID => " << state_.PromisedProposalID() << std::endl;
-    msg_to_send.PrepareRejected(nodeID, msg_.ProposalID(), state_.Accepted_Version());
+  if (msg_.ProposalID() < state_.PromisedProposalID()) {
+    msg_to_send.PrepareRejected(nodeID, msg_.ProposalID(), state_.AcceptedVersion());
   } else {
     state_.SetPromisedProposalID(msg_.ProposalID());
-
     if (!state_.Accepted()) {
       msg_to_send.PrepareOpening(nodeID, msg_.ProposalID());
     } else {
-      msg_to_send.PrepareAccepted(nodeID, msg_.ProposalID(), state_.AcceptedProposalID(), state_.AcceptedLeaseOwner(), state_.AcceptedDuration());
+      msg_to_send.PrepareAccepted(nodeID,
+        msg_.ProposalID(),
+        state_.AcceptedProposalID(),
+        state_.AcceptedLeaseOwner(),
+        state_.AcceptedDuration());
     }
   }
-
   SendResponse(senderID, msg_to_send);
 }
 
@@ -67,12 +68,12 @@ void Acceptor::OnProposeRequest() {
   auto senderID = msg_.NodeID();
 
   if (state_.Accepted() && state_.AcceptedExpireTime() < util::GetMilliTimestamp()) {
-    lease_timeout_timer_->cancel();
+    asio::error_code ec;
+    lease_timeout_timer_->cancel(ec);
     OnLeaseTimeout();
   }
 
   if (msg_.ProposalID() < state_.PromisedProposalID()) {
-    std::cout << "[INFO] Acceptor: Because of promisedID, reject propose request" << std::endl;
     msg_to_send.ProposeRejected(nodeID, msg_.ProposalID());
   } else {
     state_.SetAccepted(true);
@@ -82,11 +83,13 @@ void Acceptor::OnProposeRequest() {
     state_.SetAcceptedExpireTime(util::GetMilliTimestamp() + state_.AcceptedDuration());
 
     asio::error_code ec;
+    lease_timeout_timer_->cancel(ec);
     lease_timeout_timer_->expires_from_now(std::chrono::milliseconds(state_.AcceptedDuration()), ec);
     lease_timeout_timer_->async_wait([this](asio::error_code ec) {
-      this->OnLeaseTimeout();
+      if (!ec) {
+        this->OnLeaseTimeout();
+      }
     });
-    std::cout << "[INFO]Acceptor: Accepted propose request" << std::endl;
     msg_to_send.ProposeAccepted(nodeID, msg_.ProposalID());
   }
 

@@ -18,7 +18,7 @@ class Network;
 class PaxosLease {
  public:
   using TimeoutHandler = std::function<void(void *)>;
-  using LeaseHandler = std::function<void (void *, const char *)>;
+  using LeaseHandler = std::function<void (void *, const char *, const char *)>;
   PaxosLease();
   ~PaxosLease();
 
@@ -38,7 +38,6 @@ class PaxosLease {
   void OnRead(const Message &msg);
   void OnLearnLease();
   void OnLeaseTimeout();
-//  void OnStartupTimeout();
   void StartNewConnection(const std::string &nodeID);
 
   bool acquire_lease_;

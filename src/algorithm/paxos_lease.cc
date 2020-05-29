@@ -5,8 +5,6 @@
 #include "message/message.h"
 #include "network/network.h"
 
-#include <glog/logging.h>
-
 #include <utility>
 
 namespace elect {
@@ -34,7 +32,8 @@ PaxosLease::PaxosLease() :
 PaxosLease::~PaxosLease() {
   acquire_lease_ = false;
   network_->Stop();
-  startup_timeout_timer_->cancel();
+  asio::error_code ec;
+  startup_timeout_timer_->cancel(ec);
   on_learn_lease_handler_ = nullptr;
   on_lease_timeout_handler_ = nullptr;
   on_lease_change_handler_ = nullptr;
@@ -112,16 +111,19 @@ void PaxosLease::StartNewConnection(const std::string &nodeID) {
 }
 
 void PaxosLease::OnLearnLease() {
-  std::cout << "[SYS]PaxosLease on learn lease" << std::endl;
-
   if (on_learn_lease_handler_) {
-    on_learn_lease_handler_(on_learn_lease_handler_ptr_, GetLeaseOwner().c_str());
+    on_learn_lease_handler_(on_learn_lease_handler_ptr_,
+      GetLeaseOwner().c_str(),
+      node_id_.c_str());
   }
 
   if (learner_.IsLeaseChanged()) {
     if (on_lease_change_handler_) {
-      on_lease_change_handler_(on_lease_change_handler_ptr_, GetLeaseOwner().c_str());
+      on_lease_change_handler_(on_lease_change_handler_ptr_,
+        GetLeaseOwner().c_str(),
+        node_id_.c_str());
     }
+    learner_.SetChangedFlag(false);
   }
 
   if (!IsLeaseOwner()) {
@@ -130,8 +132,6 @@ void PaxosLease::OnLearnLease() {
 }
 
 void PaxosLease::OnLeaseTimeout() {
-  std::cout << "[SYS]PaxosLease on lease timeout" << std::endl;
-
   if (on_lease_timeout_handler_) {
     on_lease_timeout_handler_(on_lease_timeout_handler_ptr_);
   }

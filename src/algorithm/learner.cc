@@ -6,8 +6,6 @@
 #include "util/util.h"
 #include "config/config.h"
 
-#include <glog/logging.h>
-
 namespace elect {
 
 Learner::Learner(std::shared_ptr<Network> network) :
@@ -17,7 +15,8 @@ Learner::Learner(std::shared_ptr<Network> network) :
   lease_timeout_handler_(nullptr){}
 
 Learner::~Learner() {
-  lease_timeout_timer_->cancel();
+  asio::error_code ec;
+  lease_timeout_timer_->cancel(ec);
   msg_.Clear();
   learn_lease_handler_ = nullptr;
   lease_timeout_handler_ = nullptr;
@@ -33,34 +32,37 @@ void Learner::ProcessMsg(const Message &msg) {
 }
 
 void Learner::OnLearnChosen() {
-  if (state_.Learned() || state_.ExpireTime() < util::GetMilliTimestamp()) {
-    lease_timeout_timer_->cancel();
+  if (state_.Learned() && state_.ExpireTime() < util::GetMilliTimestamp()) {
+    asio::error_code ec;
+    lease_timeout_timer_->cancel(ec);
     OnLeaseTimeout();
   }
 
   const auto &config = Config::GetInstance();
   uint64_t expire_time;
   if (msg_.LeaseOwner() == config.NodeID()) {
-    expire_time = msg_.ExpireTime();
+    expire_time = msg_.ExpireTime() - 50;
   } else {
-    expire_time = util::GetMilliTimestamp() + msg_.Duration() - 500;
+    expire_time = util::GetMilliTimestamp() + msg_.Duration();
   }
 
   if (expire_time < util::GetMilliTimestamp()) {
     return;
   }
 
-  state_.SetChanged(state_.LeaseOwner() != msg_.LeaseOwner());          // flag whether it has changed
+  state_.SetChanged(owner_ != msg_.LeaseOwner());          // flag whether it has changed
   state_.SetLearned(true);
   state_.SetLeaseOwner(msg_.LeaseOwner());
   state_.SetExpireTime(msg_.ExpireTime());
-  std::cout << "Node: " << state_.LeaseOwner() << " has lease for " << state_.ExpireTime() - util::GetMilliTimestamp() << std::endl;
+  owner_.assign(msg_.LeaseOwner());                         // update new owner
 
   asio::error_code ec;
-  LOG(INFO) << "last expire time: " << state_.ExpireTime() - util::GetMilliTimestamp() << std::endl;
-  lease_timeout_timer_->expires_from_now(std::chrono::milliseconds(state_.ExpireTime() - util::GetMilliTimestamp()), ec);
+  lease_timeout_timer_->cancel(ec);
+  lease_timeout_timer_->expires_from_now(std::chrono::milliseconds(expire_time - util::GetMilliTimestamp()), ec);
   lease_timeout_timer_->async_wait([this](asio::error_code ec) {
-    this->OnLeaseTimeout();
+    if (!ec) {
+      this->OnLeaseTimeout();
+    }
   });
 
   // someone acquire lease complete, call handler
@@ -123,6 +125,10 @@ void Learner::SetOnLearnLease(Handler handler) {
 
 void Learner::SetOnLeaseTimout(Handler handler) {
   lease_timeout_handler_ = std::move(handler);
+}
+
+void Learner::SetChangedFlag(bool flag) {
+  state_.SetChanged(flag);
 }
 
 }

@@ -7,8 +7,6 @@
 #include "config/config.h"
 #include "util/util.h"
 
-#include <glog/logging.h>
-
 namespace elect {
 
 Proposer::Proposer(std::shared_ptr<Network> network)
@@ -84,7 +82,6 @@ void Proposer::OnPrepareResponse() {
   count_received_++;
 
   if (msg_.MsgType() == PaxosMsg::Type::PaxosMsg_Type_PREPARE_REJECT) {
-    std::cout << "[INFO]Proposer: prepare request has been rejected" << std::endl;
     count_rejected_++;
 
     // because of network error, increase the new version
@@ -93,7 +90,6 @@ void Proposer::OnPrepareResponse() {
     }
   } else if (msg_.MsgType() == PaxosMsg::Type::PaxosMsg_Type_PREPARE_ACCEPTED &&
                           msg_.ProposalID() >= state_.HighestReceivedProposalID()) {
-    std::cout << "[INFO]Proposer: prepare request has been accepted by someone" << std::endl;
     state_.SetHighestReceivedProposalID(msg_.ProposalID());
     state_.SetLeaseOwner(msg_.LeaseOwner());
   }
@@ -111,7 +107,6 @@ void Proposer::OnPrepareResponse() {
 void Proposer::OnProposeResponse() {
   const auto &config = Config::GetInstance();
   if (state_.ExpireTime() < util::GetMilliTimestamp()) {
-    std::cout << "[SYS]Already expired, wait for timer" << std::endl;
     return;
   }
 
@@ -124,10 +119,6 @@ void Proposer::OnProposeResponse() {
   if (msg_.MsgType() == PaxosMsg::Type::PaxosMsg_Type_PROPOSE_ACCEPTED) {
     count_accepted_++;
   }
-
-  LOG(INFO) << "[INFO]Received: " << count_received_ << std::endl;
-  LOG(INFO) << "[INFO]Accepted: " << count_accepted_ << std::endl;
-  LOG(INFO) << "[INFO]Rejected: " << count_rejected_ << std::endl;
 
   if (count_accepted_ >= config.MinMajority() &&
         state_.ExpireTime() - util::GetMilliTimestamp() > 500) {
@@ -142,10 +133,13 @@ void Proposer::OnProposeResponse() {
 
     asio::error_code ec;
     acquire_lease_timer_->cancel(ec);
+    extend_lease_timer_->cancel(ec);
     extend_lease_timer_->expires_from_now(
-      std::chrono::milliseconds((state_.ExpireTime() - util::GetMilliTimestamp())), ec);
+      std::chrono::milliseconds((state_.ExpireTime() - util::GetMilliTimestamp())), ec);  
     extend_lease_timer_->async_wait([this](asio::error_code ec) {
-      this->OnExtendLeaseTimeout();
+      if (!ec) {
+        this->OnExtendLeaseTimeout();
+      }
     });
 
     this->BroadcastMessage(msg);
@@ -160,9 +154,12 @@ void Proposer::OnProposeResponse() {
 void Proposer::StartPreparing() {
   const auto &config = Config::GetInstance();
   asio::error_code ec;
+  acquire_lease_timer_->cancel(ec);
   acquire_lease_timer_->expires_from_now(std::chrono::milliseconds(config.AcquireLeaseTimeout()), ec);
   acquire_lease_timer_->async_wait([this](asio::error_code ec) {
-    this->OnAcquireLeaseTimeout();
+    if (!ec) {
+      this->OnAcquireLeaseTimeout();
+    }
   });
 
   state_.SetPreparing(true);

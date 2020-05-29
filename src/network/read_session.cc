@@ -4,7 +4,6 @@
 #include <iostream>
 #include <utility>
 
-#include <glog/logging.h>
 #include <google/protobuf/util/delimited_message_util.h>
 
 #include "network.h"
