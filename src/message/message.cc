@@ -78,11 +78,13 @@ bool Message::ProposeAccepted(const std::string& nodeID, uint64_t proposalID) {
 
 bool Message::LearnChosen(
   const std::string& nodeID,
+  const std::string& addr,
   const std::string& lease_owner,
   uint64_t duration,
   uint64_t expiretime,
   uint64_t version) {
   Init(PaxosMsg::Type::PaxosMsg_Type_LEAEN_CHOSEN, nodeID);
+  msg_.set_addr(addr);
   msg_.set_lease_owner(lease_owner);
   msg_.set_duration(duration);
   msg_.set_expire_time(expiretime);

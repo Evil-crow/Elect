@@ -126,6 +126,7 @@ void Proposer::OnProposeResponse() {
     state_.SetVersion(state_.Version() + 1);                // increase version to reject new online node start prepare.
     Message msg;
     msg.LearnChosen(config.NodeID(),
+      config.Addr(),
       state_.LeaseOwner(),
       state_.ExpireTime() - util::GetMilliTimestamp(),
       state_.ExpireTime(),

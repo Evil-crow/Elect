@@ -5,6 +5,8 @@ set(CMAKE_CXX_STANDARD 14)
 
 include_directories(src)
 add_subdirectory(src/test)
+set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(SRC_CONFIG
         src/config/config.h src/config/config.cc)
 set(SRC_MESSAGE
@@ -23,7 +25,17 @@ set(SRC_ALGORITHM
         src/algorithm/proposer.h src/algorithm/proposer.cc
         src/algorithm/acceptor.h src/algorithm/acceptor.cc
         src/algorithm/learner.h  src/algorithm/learner.cc
-        src/algorithm/paxos_lease.h src/algorithm/paxos_lease.cc)
+        src/algorithm/elect.h src/algorithm/elect.cc src/algorithm/c.cc src/algorithm/c.h)
 set(SRC_UTIL
         src/util/util.cc src/util/util.h)
+set(SRC
+        ${SRC_CONFIG}
+        ${SRC_NETWORK}
+        ${SRC_MESSAGE}
+        ${SRC_STATE}
+        ${SRC_ALGORITHM}
+        ${SRC_UTIL})
+add_library(elect SHARED ${SRC})
+install(TARGETS elect)
+install(DIRECTORY include/elect DESTINATION include)
 

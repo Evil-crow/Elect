@@ -33,6 +33,11 @@ namespace elect_test {
     GTEST_ASSERT_EQ(config.NodeID(), "127.0.0.1:10000");
   }
 
+  TEST(CONFIG_TEST, ADDR_TEST) {
+    const auto &config = elect::Config::GetInstance();
+    GTEST_ASSERT_EQ(config.Addr(), "127.0.0.1:9999");
+  }
+
   TEST(CONFIG_TEST, PARAM_TEST) {
     const auto &config = elect::Config::GetInstance();
     GTEST_ASSERT_EQ(config.NodeNum(), 3);

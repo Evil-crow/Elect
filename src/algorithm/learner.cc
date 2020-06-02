@@ -55,6 +55,7 @@ void Learner::OnLearnChosen() {
   state_.SetLeaseOwner(msg_.LeaseOwner());
   state_.SetExpireTime(msg_.ExpireTime());
   owner_.assign(msg_.LeaseOwner());                         // update new owner
+  addr_.assign(msg_.Addr());
 
   asio::error_code ec;
   lease_timeout_timer_->cancel(ec);
@@ -111,6 +112,15 @@ std::string Learner::GetLeaseOwner()
     return state_.LeaseOwner();
   else
     return std::string{};
+}
+
+std::string Learner::GetLeaseAddr() {
+  CheckLease();
+  if (!addr_.empty()) {
+    return addr_;
+  } else {
+    return std::string{};
+  }
 }
 
 uint64_t Learner::GetLeaseEpoch()

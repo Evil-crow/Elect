@@ -46,6 +46,7 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_paxos_5fmsg_2eproto::offsets[]
   ~0u,  // no _weak_field_map_
   PROTOBUF_FIELD_OFFSET(::elect::PaxosMsg, type_),
   PROTOBUF_FIELD_OFFSET(::elect::PaxosMsg, node_id_),
+  PROTOBUF_FIELD_OFFSET(::elect::PaxosMsg, addr_),
   PROTOBUF_FIELD_OFFSET(::elect::PaxosMsg, proposal_id_),
   PROTOBUF_FIELD_OFFSET(::elect::PaxosMsg, accepted_proposal_id_),
   PROTOBUF_FIELD_OFFSET(::elect::PaxosMsg, lease_owner_),
@@ -62,17 +63,18 @@ static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] =
 };
 
 const char descriptor_table_protodef_paxos_5fmsg_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\017paxos_msg.proto\022\005elect\"\216\003\n\010PaxosMsg\022\"\n"
+  "\n\017paxos_msg.proto\022\005elect\"\234\003\n\010PaxosMsg\022\"\n"
   "\004type\030\001 \001(\0162\024.elect.PaxosMsg.Type\022\017\n\007nod"
-  "e_id\030\002 \001(\t\022\023\n\013proposal_id\030\003 \001(\004\022\034\n\024accep"
-  "ted_proposal_id\030\004 \001(\004\022\023\n\013lease_owner\030\005 \001"
-  "(\t\022\020\n\010duration\030\006 \001(\004\022\023\n\013expire_time\030\007 \001("
-  "\004\022\017\n\007version\030\010 \001(\004\"\314\001\n\004Type\022\010\n\004NONE\020\000\022\023\n"
-  "\017PREPARE_REQUEST\020\001\022\022\n\016PREPARE_REJECT\020\002\022\024"
-  "\n\020PREPARE_ACCEPTED\020\003\022\023\n\017PREPARE_OPENING\020"
-  "\004\022\023\n\017PROPOSE_REQUEST\020\005\022\024\n\020PROPOSE_ACCEPT"
-  "ED\020\006\022\022\n\016PROPOSE_REJECT\020\007\022\020\n\014LEAEN_CHOSEN"
-  "\020\010\022\025\n\021ONLINE_TO_CONNECT\020\tb\006proto3"
+  "e_id\030\002 \001(\t\022\014\n\004addr\030\003 \001(\t\022\023\n\013proposal_id\030"
+  "\004 \001(\004\022\034\n\024accepted_proposal_id\030\005 \001(\004\022\023\n\013l"
+  "ease_owner\030\006 \001(\t\022\020\n\010duration\030\007 \001(\004\022\023\n\013ex"
+  "pire_time\030\010 \001(\004\022\017\n\007version\030\t \001(\004\"\314\001\n\004Typ"
+  "e\022\010\n\004NONE\020\000\022\023\n\017PREPARE_REQUEST\020\001\022\022\n\016PREP"
+  "ARE_REJECT\020\002\022\024\n\020PREPARE_ACCEPTED\020\003\022\023\n\017PR"
+  "EPARE_OPENING\020\004\022\023\n\017PROPOSE_REQUEST\020\005\022\024\n\020"
+  "PROPOSE_ACCEPTED\020\006\022\022\n\016PROPOSE_REJECT\020\007\022\020"
+  "\n\014LEAEN_CHOSEN\020\010\022\025\n\021ONLINE_TO_CONNECT\020\tb"
+  "\006proto3"
   ;
 static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_paxos_5fmsg_2eproto_deps[1] = {
 };
@@ -81,7 +83,7 @@ static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_pax
 };
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_paxos_5fmsg_2eproto_once;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_paxos_5fmsg_2eproto = {
-  false, false, descriptor_table_protodef_paxos_5fmsg_2eproto, "paxos_msg.proto", 433,
+  false, false, descriptor_table_protodef_paxos_5fmsg_2eproto, "paxos_msg.proto", 447,
   &descriptor_table_paxos_5fmsg_2eproto_once, descriptor_table_paxos_5fmsg_2eproto_sccs, descriptor_table_paxos_5fmsg_2eproto_deps, 1, 0,
   schemas, file_default_instances, TableStruct_paxos_5fmsg_2eproto::offsets,
   file_level_metadata_paxos_5fmsg_2eproto, 1, file_level_enum_descriptors_paxos_5fmsg_2eproto, file_level_service_descriptors_paxos_5fmsg_2eproto,
@@ -150,6 +152,11 @@ PaxosMsg::PaxosMsg(const PaxosMsg& from)
     node_id_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_node_id(),
       GetArena());
   }
+  addr_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  if (!from._internal_addr().empty()) {
+    addr_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_addr(),
+      GetArena());
+  }
   lease_owner_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (!from._internal_lease_owner().empty()) {
     lease_owner_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_lease_owner(),
@@ -164,6 +171,7 @@ PaxosMsg::PaxosMsg(const PaxosMsg& from)
 void PaxosMsg::SharedCtor() {
   ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&scc_info_PaxosMsg_paxos_5fmsg_2eproto.base);
   node_id_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  addr_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   lease_owner_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   ::memset(&proposal_id_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&type_) -
@@ -179,6 +187,7 @@ PaxosMsg::~PaxosMsg() {
 void PaxosMsg::SharedDtor() {
   GOOGLE_DCHECK(GetArena() == nullptr);
   node_id_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  addr_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   lease_owner_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
@@ -204,6 +213,7 @@ void PaxosMsg::Clear() {
   (void) cached_has_bits;
 
   node_id_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  addr_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   lease_owner_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   ::memset(&proposal_id_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&type_) -
@@ -236,46 +246,55 @@ const char* PaxosMsg::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::i
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // uint64 proposal_id = 3;
+      // string addr = 3;
       case 3:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 24)) {
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 26)) {
+          auto str = _internal_mutable_addr();
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "elect.PaxosMsg.addr"));
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // uint64 proposal_id = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 32)) {
           proposal_id_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // uint64 accepted_proposal_id = 4;
-      case 4:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 32)) {
+      // uint64 accepted_proposal_id = 5;
+      case 5:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 40)) {
           accepted_proposal_id_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // string lease_owner = 5;
-      case 5:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 42)) {
+      // string lease_owner = 6;
+      case 6:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 50)) {
           auto str = _internal_mutable_lease_owner();
           ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "elect.PaxosMsg.lease_owner"));
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // uint64 duration = 6;
-      case 6:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 48)) {
+      // uint64 duration = 7;
+      case 7:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 56)) {
           duration_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // uint64 expire_time = 7;
-      case 7:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 56)) {
+      // uint64 expire_time = 8;
+      case 8:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 64)) {
           expire_time_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // uint64 version = 8;
-      case 8:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 64)) {
+      // uint64 version = 9;
+      case 9:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 72)) {
           version_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
@@ -325,44 +344,54 @@ failure:
         2, this->_internal_node_id(), target);
   }
 
-  // uint64 proposal_id = 3;
+  // string addr = 3;
+  if (this->addr().size() > 0) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_addr().data(), static_cast<int>(this->_internal_addr().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "elect.PaxosMsg.addr");
+    target = stream->WriteStringMaybeAliased(
+        3, this->_internal_addr(), target);
+  }
+
+  // uint64 proposal_id = 4;
   if (this->proposal_id() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt64ToArray(3, this->_internal_proposal_id(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt64ToArray(4, this->_internal_proposal_id(), target);
   }
 
-  // uint64 accepted_proposal_id = 4;
+  // uint64 accepted_proposal_id = 5;
   if (this->accepted_proposal_id() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt64ToArray(4, this->_internal_accepted_proposal_id(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt64ToArray(5, this->_internal_accepted_proposal_id(), target);
   }
 
-  // string lease_owner = 5;
+  // string lease_owner = 6;
   if (this->lease_owner().size() > 0) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_lease_owner().data(), static_cast<int>(this->_internal_lease_owner().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
       "elect.PaxosMsg.lease_owner");
     target = stream->WriteStringMaybeAliased(
-        5, this->_internal_lease_owner(), target);
+        6, this->_internal_lease_owner(), target);
   }
 
-  // uint64 duration = 6;
+  // uint64 duration = 7;
   if (this->duration() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt64ToArray(6, this->_internal_duration(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt64ToArray(7, this->_internal_duration(), target);
   }
 
-  // uint64 expire_time = 7;
+  // uint64 expire_time = 8;
   if (this->expire_time() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt64ToArray(7, this->_internal_expire_time(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt64ToArray(8, this->_internal_expire_time(), target);
   }
 
-  // uint64 version = 8;
+  // uint64 version = 9;
   if (this->version() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt64ToArray(8, this->_internal_version(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt64ToArray(9, this->_internal_version(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -388,42 +417,49 @@ size_t PaxosMsg::ByteSizeLong() const {
         this->_internal_node_id());
   }
 
-  // string lease_owner = 5;
+  // string addr = 3;
+  if (this->addr().size() > 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_addr());
+  }
+
+  // string lease_owner = 6;
   if (this->lease_owner().size() > 0) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
         this->_internal_lease_owner());
   }
 
-  // uint64 proposal_id = 3;
+  // uint64 proposal_id = 4;
   if (this->proposal_id() != 0) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt64Size(
         this->_internal_proposal_id());
   }
 
-  // uint64 accepted_proposal_id = 4;
+  // uint64 accepted_proposal_id = 5;
   if (this->accepted_proposal_id() != 0) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt64Size(
         this->_internal_accepted_proposal_id());
   }
 
-  // uint64 duration = 6;
+  // uint64 duration = 7;
   if (this->duration() != 0) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt64Size(
         this->_internal_duration());
   }
 
-  // uint64 expire_time = 7;
+  // uint64 expire_time = 8;
   if (this->expire_time() != 0) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt64Size(
         this->_internal_expire_time());
   }
 
-  // uint64 version = 8;
+  // uint64 version = 9;
   if (this->version() != 0) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt64Size(
@@ -470,6 +506,9 @@ void PaxosMsg::MergeFrom(const PaxosMsg& from) {
   if (from.node_id().size() > 0) {
     _internal_set_node_id(from._internal_node_id());
   }
+  if (from.addr().size() > 0) {
+    _internal_set_addr(from._internal_addr());
+  }
   if (from.lease_owner().size() > 0) {
     _internal_set_lease_owner(from._internal_lease_owner());
   }
@@ -515,6 +554,7 @@ void PaxosMsg::InternalSwap(PaxosMsg* other) {
   using std::swap;
   _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
   node_id_.Swap(&other->node_id_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  addr_.Swap(&other->addr_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   lease_owner_.Swap(&other->lease_owner_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
       PROTOBUF_FIELD_OFFSET(PaxosMsg, type_)

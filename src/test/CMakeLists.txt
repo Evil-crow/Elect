@@ -4,6 +4,8 @@ project(Test)
 set(CMAKE_CXX_STANDARD 14)
 add_compile_options(-g)
 
+set(EXECUTABLE_OUTPUT_PATH ../../bin)
+
 set(SRC_CONFIG
         ../config/config.h ../config/config.cc)
 set(SRC_MESSAGE
@@ -22,7 +24,7 @@ set(SRC_ALGORITHM
         ../algorithm/proposer.h ../algorithm/proposer.cc
         ../algorithm/acceptor.h ../algorithm/acceptor.cc
         ../algorithm/learner.h  ../algorithm/learner.cc
-        ../algorithm/paxos_lease.h ../algorithm/paxos_lease.cc)
+        ../algorithm/elect.h ../algorithm/elect.cc)
 set(SRC_UTIL
         ../util/util.h  ../util/util.cc)
 
@@ -31,13 +33,14 @@ add_executable(config_test
         ${SRC_CONFIG})
 target_link_libraries(config_test  gtest gtest_main yaml-cpp pthread)
 
-add_executable(network_test
-        network_test.cc
-        ${SRC_NETWORK}
-        ${SRC_MESSAGE}
-        ${SRC_STATE})
-target_link_libraries(network_test
-        glog yaml-cpp protobuf pthread)
+#add_executable(network_test
+#        network_test.cc
+#        ${SRC_NETWORK}
+#        ${SRC_MESSAGE}
+#        ${SRC_STATE})
+#        ${SRC_STATE})
+#target_link_libraries(network_test
+#        glog yaml-cpp protobuf pthread)
 
 add_executable(proposer_state_test proposer_state_test.cc ${SRC_STATE})
 target_link_libraries(proposer_state_test gtest gtest_main pthread)

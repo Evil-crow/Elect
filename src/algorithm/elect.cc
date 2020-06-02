@@ -1,5 +1,5 @@
 
-#include "paxos_lease.h"
+#include "elect.h"
 
 #include "util/util.h"
 #include "message/message.h"
@@ -9,7 +9,7 @@
 
 namespace elect {
 
-PaxosLease::PaxosLease() :
+Elect::Elect() :
   acquire_lease_(false),
   network_(std::make_shared<Network>()),
   startup_timeout_timer_(std::make_shared<asio::steady_timer>(*network_->GetIOContext())),
@@ -29,7 +29,7 @@ PaxosLease::PaxosLease() :
   network_->SetReadHandler([this](const Message &msg){ this->OnRead(msg); });
 }
 
-PaxosLease::~PaxosLease() {
+Elect::~Elect() {
   acquire_lease_ = false;
   network_->Stop();
   asio::error_code ec;
@@ -42,7 +42,7 @@ PaxosLease::~PaxosLease() {
   on_lease_change_handler_ptr_ = nullptr;
 }
 
-void PaxosLease::OnRead(const Message &msg) {
+void Elect::OnRead(const Message &msg) {
   if (msg.IsRequest() && (msg.ProposalID() > proposer_.HightProposalID())) {
     proposer_.SetHighestProposalID(msg.ProposalID());
   }
@@ -61,59 +61,64 @@ void PaxosLease::OnRead(const Message &msg) {
   }
 }
 
-void PaxosLease::AcquireLease() {
+void Elect::AcquireLease() {
   acquire_lease_ = true;
   proposer_.StartAcquireLease();
   network_->Start();
 }
 
-bool PaxosLease::IsLeaseOwner() {
+bool Elect::IsLeaseOwner() {
   return learner_.IsLeaseOwner();
 }
 
-bool PaxosLease::IsLeaseKnown() {
+bool Elect::IsLeaseKnown() {
   return learner_.IsLeaseKnown();
 }
 
-std::string PaxosLease::GetLeaseOwner() {
+std::string Elect::GetLeaseOwner() {
   return learner_.GetLeaseOwner();
 }
 
-uint64_t PaxosLease::GetLeaseEpoch() {
+std::string Elect::GetLeaseAddr() {
+  return learner_.GetLeaseAddr();
+}
+
+uint64_t Elect::GetLeaseEpoch() {
   return learner_.GetLeaseEpoch();
 }
 
-void PaxosLease::SetOnLearnLease(LeaseHandler handler, void *ptr) {
+void Elect::SetOnLearnLease(LeaseHandler handler, void *ptr) {
   on_learn_lease_handler_ = std::move(handler);
   on_learn_lease_handler_ptr_ = ptr;
 }
 
-void PaxosLease::SetOnLeaseChange(LeaseHandler handler, void *ptr) {
+void Elect::SetOnLeaseChange(LeaseHandler handler, void *ptr) {
   on_lease_change_handler_ = std::move(handler);
   on_lease_change_handler_ptr_ = ptr;
 }
 
-void PaxosLease::SetOnLeaseTimeout(TimeoutHandler handler, void *ptr) {
+void Elect::SetOnLeaseTimeout(TimeoutHandler handler, void *ptr) {
   on_lease_timeout_handler_ = std::move(handler);
   on_lease_timeout_handler_ptr_ = ptr;
 }
 
-void PaxosLease::Stop() {
+void Elect::Stop() {
   network_->Stop();
 }
 
-void PaxosLease::Continue() {
+void Elect::Continue() {
   network_->Start();
 }
 
-void PaxosLease::StartNewConnection(const std::string &nodeID) {
+void Elect::StartNewConnection(const std::string &nodeID) {
   network_->NewConnetion(nodeID);
 }
 
-void PaxosLease::OnLearnLease() {
+void Elect::OnLearnLease() {
   if (on_learn_lease_handler_) {
     on_learn_lease_handler_(on_learn_lease_handler_ptr_,
       GetLeaseOwner().c_str(),
+      GetLeaseAddr().c_str(),
       node_id_.c_str());
   }
 
@@ -121,6 +126,7 @@ void PaxosLease::OnLearnLease() {
     if (on_lease_change_handler_) {
       on_lease_change_handler_(on_lease_change_handler_ptr_,
         GetLeaseOwner().c_str(),
+        GetLeaseAddr().c_str(),
         node_id_.c_str());
     }
     learner_.SetChangedFlag(false);
@@ -131,7 +137,7 @@ void PaxosLease::OnLearnLease() {
   }
 }
 
-void PaxosLease::OnLeaseTimeout() {
+void Elect::OnLeaseTimeout() {
   if (on_lease_timeout_handler_) {
     on_lease_timeout_handler_(on_lease_timeout_handler_ptr_);
   }

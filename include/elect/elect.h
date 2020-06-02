@@ -1,6 +1,6 @@
 
-#ifndef ELECT_PAXOS_LEASE_H
-#define ELECT_PAXOS_LEASE_H
+#ifndef ELECT_ELECT_H
+#define ELECT_ELECT_H
 
 #include <memory>
 #include <functional>
@@ -15,12 +15,12 @@
 namespace elect {
 
 class Network;
-class PaxosLease {
+class Elect {
  public:
   using TimeoutHandler = std::function<void(void *)>;
-  using LeaseHandler = std::function<void (void *, const char *, const char *)>;
-  PaxosLease();
-  ~PaxosLease();
+  using LeaseHandler = std::function<void (void *, const char *, const char *, const char *)>;
+  Elect();
+  ~Elect();
 
   void AcquireLease();
   void Stop();
@@ -33,6 +33,7 @@ class PaxosLease {
   bool IsLeaseOwner();
   bool IsLeaseKnown();
   std::string GetLeaseOwner();
+  std::string GetLeaseAddr();
   uint64_t GetLeaseEpoch();
 
   void OnRead(const Message &msg);
@@ -57,4 +58,4 @@ class PaxosLease {
 
 }
 
-#endif //ELECT_PAXOS_LEASE_H
+#endif //ELECT_ELECT_H
